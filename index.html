@@ -1,126 +1,141 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><title>Devo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><title>Devo Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--bg:#0e0e14;--panel:#15151e;--line:#26263a;--text:#ececf5;--mute:#8d8da3;--acc:#7c6dff;--acc2:#2bb5ff;--code:#07070b;--codet:#e8e8f2;--user:#221f3f;color-scheme:dark}
+:root{--bg:#000;--p:#0c0c10;--line:#1f1f2b;--text:#eee;--mute:#8a8a9c;--acc:#7c6dff;--acc2:#2bb5ff;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column}
-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
-.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font:700 14px ui-monospace,monospace}
-.right{display:flex;gap:8px;align-items:center}
-.icon{background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:7px 11px;cursor:pointer;font:inherit}
-.icon:hover{background:var(--panel)}.icon.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.main{flex:1;display:flex;min-height:0}
-aside{width:260px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:12px;gap:8px;overflow:auto}
-.new{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:0;border-radius:10px;padding:10px;font:600 14px inherit;cursor:pointer}
-.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute);margin:10px 4px 0}
-.chat{padding:9px 10px;border-radius:9px;cursor:pointer;display:flex;justify-content:space-between;gap:6px;font-size:14px}
-.chat span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chat:hover,.chat.on{background:var(--line)}
-.chat b{color:var(--mute);font-weight:400;visibility:hidden}.chat:hover b{visibility:visible}
-section{flex:1;display:flex;flex-direction:column;min-width:0}
-#msgs{flex:1;overflow:auto;padding:24px 16px}.wrap{max-width:780px;margin:0 auto}
-.hero{text-align:center;margin-top:8vh}.hero h1{font-size:30px;margin:8px 0 4px}.hero p{color:var(--mute);margin:0 0 22px}
-.sugs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;text-align:left}
-.sug{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px;cursor:pointer;font-size:14px}.sug:hover{border-color:var(--acc)}.sug small{display:block;color:var(--mute)}
-.m{display:flex;gap:12px;margin-bottom:22px}
-.av{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
-.body{min-width:0;flex:1;overflow-wrap:anywhere}.m.me{justify-content:flex-end}.m.me .av{display:none}.m.me .body{background:var(--user);padding:8px 14px;border-radius:14px;flex:0 1 auto}
-.body p{margin:0 0 10px}.body ul,.body ol{margin:0 0 10px;padding-left:22px}
-.body code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--panel);border:1px solid var(--line);padding:1px 5px;border-radius:5px}
-pre{background:var(--code);border-radius:12px;margin:0 0 12px;overflow:hidden;border:1px solid var(--line)}
-pre .bar{display:flex;justify-content:space-between;padding:6px 12px;font-size:12px;color:#9a9ab0;background:rgba(255,255,255,.05)}
-pre .bar button{background:none;border:0;color:#9a9ab0;cursor:pointer;font:inherit}
-pre code{display:block;background:none;border:0;padding:12px 14px;overflow-x:auto;color:var(--codet);font-size:13px;line-height:1.55;white-space:pre}
-.k{color:#c792ea}.s{color:#a5e075}.c{color:#6c7086}.n{color:#f2b36b}.f{color:#6cb6ff}.dots{color:var(--mute)}
-.more{margin:-8px 0 20px 42px}
-footer{padding:10px 16px 14px}
-.box{max-width:780px;margin:0 auto;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:8px 10px;display:flex;align-items:flex-end;gap:8px}
-.box:focus-within{border-color:var(--acc)}
-textarea{flex:1;border:0;background:none;color:var(--text);font:inherit;resize:none;outline:0;max-height:180px;padding:7px 4px}
-.ib{border:0;background:none;color:var(--mute);width:36px;height:36px;border-radius:10px;cursor:not-allowed;font-size:18px;opacity:.5}
-.send{border:0;background:var(--acc);color:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:16px}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;overflow:hidden}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes slide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,110,.6)}50%{box-shadow:0 0 0 6px rgba(255,80,110,0)}}
+#rail{width:72px;flex:none;background:var(--p);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;overflow-y:auto}
+.si,.av{--s:48px;width:var(--s);height:var(--s);border-radius:50%;background:#1a1a26;display:grid;place-items:center;font-weight:700;overflow:hidden;flex:none;font-size:calc(var(--s)*.34)}
+.av img,.si img{width:100%;height:100%;object-fit:cover}
+.si{position:relative;cursor:pointer;transition:border-radius .2s,transform .2s,background .2s;overflow:visible;font-size:16px}
+.si>img,.si>span{border-radius:inherit;width:100%;height:100%;object-fit:cover;display:grid;place-items:center}
+.si:hover{border-radius:16px;transform:scale(1.08);background:var(--acc)}.si.on{border-radius:16px;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+.si.add{border:2px dashed var(--line);background:none;color:var(--acc2);font-size:24px}.si.add:hover{border-color:var(--acc2);background:none}
+.dot{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#ff506e;border:3px solid var(--p);animation:pulse 1.6s infinite}
+.sep{width:30px;height:2px;background:var(--line);flex:none}
+#col{flex:1;display:flex;flex-direction:column;min-width:0}
+#top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--p)}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700}.mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font:700 12px monospace;color:#fff}
+.sname{font-weight:700;white-space:nowrap}
+#tabs{flex:1;display:flex;gap:6px;overflow-x:auto;align-items:center}
+.tab{position:relative;padding:6px 12px;border-radius:999px;cursor:pointer;color:var(--mute);white-space:nowrap;transition:.2s}
+.tab:hover{background:var(--line);color:var(--text)}.tab.on{background:var(--line);color:var(--text);font-weight:600}
+.tab .dot{top:-1px;right:-1px;width:10px;height:10px;border-width:2px}
+.plus{width:30px;height:30px;border-radius:50%;border:2px solid var(--acc2);color:var(--acc2);display:grid;place-items:center;cursor:pointer;font-size:20px;line-height:1;transition:.25s;flex:none}
+.plus:hover{background:var(--acc2);color:#000;transform:rotate(90deg)}
+.gear{background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:6px 10px;cursor:pointer;font:inherit;transition:.2s}.gear:hover{background:var(--line)}
+#body{flex:1;overflow:auto;padding:16px 18px}
+.m{display:flex;gap:10px;margin-bottom:14px;max-width:780px;animation:pop .25s}
+.who{font-weight:600;font-size:14px}.who small{color:var(--mute);font-weight:400;margin-left:6px}
+.txt{white-space:pre-wrap;overflow-wrap:anywhere}.x{background:none;border:0;color:var(--mute);cursor:pointer;visibility:hidden}.m:hover .x{visibility:visible}
+.empty{color:var(--mute);text-align:center;margin-top:10vh}
+#foot{padding:10px 16px 14px}
+.box{border:1px solid var(--line);background:var(--p);border-radius:16px;padding:8px 10px;display:flex;align-items:flex-end;gap:8px;transition:border-color .2s}.box:focus-within{border-color:var(--acc)}
+textarea{flex:1;border:0;background:none;color:var(--text);font:inherit;resize:none;outline:0;max-height:140px;padding:7px 4px}
+.ib{border:0;background:none;color:var(--mute);width:34px;height:34px;font-size:18px;opacity:.45;cursor:not-allowed}
+.send{border:0;background:var(--acc);color:#fff;width:36px;height:36px;border-radius:10px;cursor:pointer;transition:.15s}.send:active{transform:scale(.9)}
 .hint{text-align:center;color:var(--mute);font-size:12px;margin-top:6px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:9}.modal.on{display:grid}
-.card{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:20px;width:min(440px,92vw);max-height:90vh;overflow:auto}
-.card h3{margin:0 0 14px}.row{margin-bottom:14px}.row label{display:block;font-size:13px;color:var(--mute);margin-bottom:5px}
-select,input,.card textarea{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px;font:inherit}
-.note{font-size:12px;color:var(--mute)}
-@media(max-width:720px){aside{display:none}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:14px}
+.card{background:var(--p);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;animation:pop .3s;transition:.2s}.card:hover{border-color:var(--acc);transform:translateY(-3px)}
+.card small{color:var(--mute)}
+input[type=text]{width:100%;background:var(--p);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:inherit;outline:0}input[type=text]:focus{border-color:var(--acc)}
+.b{border:0;color:#fff;border-radius:10px;padding:8px 14px;font:600 14px inherit;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));transition:.15s}.b:hover{filter:brightness(1.15)}.b.g{background:var(--line)}.b[disabled]{opacity:.5}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;place-items:center;z-index:9}.ov.on{display:grid}
+.mod{background:#0a0a0f;border:1px solid var(--line);border-radius:18px;padding:20px;width:min(440px,92vw);max-height:88vh;overflow:auto;animation:pop .25s;display:flex;flex-direction:column;gap:12px}
+.mod h3{margin:0}.row{display:flex;align-items:center;gap:10px}.row>span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--mute)}
+#toasts{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:8px;z-index:20}
+.t{background:#14141d;border:1px solid var(--acc);border-radius:12px;padding:10px 14px;max-width:300px;animation:slide .3s;cursor:pointer}.t small{color:var(--mute);display:block}
+@media(max-width:600px){#rail{width:62px}.logo b{display:none}}
 </style></head><body>
-<header>
- <div class="logo"><div class="mark">Dv</div>Devo</div>
- <div class="right"><button class="icon" id="inf" title="Keep generating automatically when a reply is cut off">∞ Infinite</button><button class="icon" id="setBtn">⚙ Settings</button></div>
-</header>
-<div class="main">
- <aside><button class="new" id="newBtn">+ New chat</button><div class="lbl">Chats</div><div id="list"></div></aside>
- <section>
-  <div id="msgs"><div class="wrap" id="wrap"></div></div>
-  <footer>
-   <div class="box"><button class="ib" disabled title="Image upload coming soon">🖼</button>
-    <textarea id="inp" rows="1" placeholder="Ask Devo anything about code: write, debug, design, review…"></textarea>
-    <button class="send" id="send">➤</button></div>
-   <div class="hint">Image upload coming soon · Enter to send, Shift+Enter for a new line</div>
-  </footer>
- </section>
-</div>
-<div class="modal" id="modal"><div class="card"><h3>Settings</h3>
- <div class="row"><label>Focus</label><select id="focus"><option value="code">Writing & debugging code</option><option value="design">Architecture & design</option><option value="review">Code review & refactor</option></select></div>
- <button class="new" id="close" style="width:100%">Done</button></div></div>
+<div id="rail"></div>
+<div id="col"><div id="top"></div><div id="body"><div class="empty">Loading…</div></div>
+ <div id="foot" style="display:none"><div class="box"><button class="ib" disabled title="Image sharing coming soon">🖼</button><textarea id="inp" rows="1" placeholder="Message…"></textarea><button class="send" id="send">➤</button></div><div class="hint">Image sharing coming soon</div></div></div>
+<div class="ov" id="ov"><div class="mod" id="mod"></div></div><div id="toasts"></div>
 <script>
-const $=id=>document.getElementById(id);
-let chats=[],cur=null,busy=false,stop=false,PROMPT='';
-let S={focus:'code',inf:false};
-try{chats=JSON.parse(localStorage.getItem('dv_chats')||'[]');S=Object.assign(S,JSON.parse(localStorage.getItem('dv_set')||'{}'))}catch(e){}
-const save=()=>{try{localStorage.setItem('dv_chats',JSON.stringify(chats.slice(0,40)));localStorage.setItem('dv_set',JSON.stringify(S))}catch(e){}};
-const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function hl(c){return esc(c).replace(/(#.*$|\/\/.*$)|("""[\s\S]*?"""|'[^'\n]*'|"[^"\n]*"|`[^`\n]*`)|\b(def|class|import|from|return|if|elif|else|for|while|in|not|and|or|with|as|try|except|catch|finally|raise|throw|yield|async|await|lambda|None|null|True|False|true|false|pass|self|this|const|let|var|function|fn|func|struct|impl|public|private|static|void|int|new|export|package|use|match|switch|case)\b|\b(\d+\.?\d*)\b|\b([a-zA-Z_]\w*)(?=\()/gm,(m,a,b,c2,d,e)=>a?`<i class="c">${a}</i>`:b?`<i class="s">${b}</i>`:c2?`<i class="k">${c2}</i>`:d?`<i class="n">${d}</i>`:`<i class="f">${e}</i>`).replace(/<i class="(\w)">/g,'<span class="$1">').replace(/<\/i>/g,'</span>')}
-function md(t){let h='';t.split(/```/).forEach((p,i)=>{
- if(i%2){const nl=p.indexOf('\n'),lang=(p.slice(0,nl)||'code').trim(),code=p.slice(nl+1).replace(/\n$/,'');
-  h+=`<pre><div class="bar"><span>${esc(lang)}</span><button onclick="cp(this)">Copy</button></div><code>${hl(code)}</code></pre>`}
- else p.split(/\n{2,}/).forEach(b=>{b=b.trim();if(!b)return;const f=x=>esc(x).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>'),L=b.split('\n');
-  if(L.every(l=>/^\s*[-*] /.test(l)))h+='<ul>'+L.map(l=>'<li>'+f(l.replace(/^\s*[-*] /,''))+'</li>').join('')+'</ul>';
-  else if(L.every(l=>/^\s*\d+\. /.test(l)))h+='<ol>'+L.map(l=>'<li>'+f(l.replace(/^\s*\d+\. /,''))+'</li>').join('')+'</ol>';
-  else if(/^#{1,4} /.test(b))h+='<p><b>'+f(b.replace(/^#+ /,''))+'</b></p>';
-  else h+='<p>'+f(b).replace(/\n/g,'<br>')+'</p>'})});return h}
-function cp(b){navigator.clipboard&&navigator.clipboard.writeText(b.closest('pre').querySelector('code').innerText);b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)}
-const SUG=[['Build a REST API','in Python, Node or Go with auth and tests'],['Debug my code','paste an error or a broken function'],['Design a system architecture','for a scalable web or mobile app'],['Make a modern UI','React, Tailwind or plain HTML/CSS']];
-function render(){
- const c=chats.find(x=>x.id===cur),w=$('wrap');
- if(!c||!c.m.length)w.innerHTML=`<div class="hero"><div class="mark" style="margin:auto;width:52px;height:52px;font-size:22px;border-radius:15px">Dv</div><h1>What are we building?</h1><p>Any language. Any stack. Unlimited code prompts.</p><div class="sugs">${SUG.map((s,i)=>`<div class="sug" onclick="ask(SUG[${i}].join(' '))">${s[0]}<small>${s[1]}</small></div>`).join('')}</div></div>`;
- else{w.innerHTML=c.m.map(m=>m.r==='user'?`<div class="m me"><div class="body">${esc(m.t).replace(/\n/g,'<br>')}</div></div>`:`<div class="m"><div class="av">Dv</div><div class="body">${m.t?md(m.t):'<span class="dots">Thinking…</span>'}</div></div>`).join('');
-  if(!busy&&c.m.length&&c.m[c.m.length-1].r==='assistant')w.innerHTML+='<div class="more"><button class="icon" onclick="ask(\'Continue exactly where you left off. Do not repeat anything.\')">Continue ∞</button></div>'}
- $('list').innerHTML=chats.map(x=>`<div class="chat ${x.id===cur?'on':''}" onclick="cur='${x.id}';render()"><span>${esc(x.title)}</span><b onclick="event.stopPropagation();del('${x.id}')">✕</b></div>`).join('');
- $('inf').classList.toggle('on',S.inf);$('msgs').scrollTop=$('msgs').scrollHeight}
-function del(id){chats=chats.filter(x=>x.id!==id);if(cur===id)cur=null;save();render()}
-const WORKER_URL='/api/chat'; // served by netlify/edge-functions/chat.js
-async function stream(msgs,onText){
- const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,focus:S.focus})});
- if(!r.ok){let t=await r.text();try{const j=JSON.parse(t);t=(j.error&&j.error.message)||j.error||t}catch(e){}throw new Error(r.status+': '+t)}
- const rd=r.body.getReader(),dec=new TextDecoder();let buf='',cut=false;
- while(true){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
-  const lines=buf.split('\n');buf=lines.pop();
-  for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d)continue;
-   try{const j=JSON.parse(d);if(j.type==='content_block_delta'&&j.delta.text)onText(j.delta.text);if(j.type==='message_delta'&&j.delta.stop_reason==='max_tokens')cut=true}catch(e){}}}
- return cut}
-async function ask(text){
- text=(text||'').trim();if(!text||busy)return;
- let c=chats.find(x=>x.id===cur);
- if(!c){c={id:'c'+Date.now(),title:text.slice(0,32),m:[]};chats.unshift(c);cur=c.id}
- c.m.push({r:'user',t:text});const a={r:'assistant',t:''};c.m.push(a);$('inp').value='';$('inp').style.height='auto';busy=true;render();
- const base=c.m.slice(0,-1).map(m=>({role:m.r,content:m.t}));
- try{let part=0,cut;
-  do{const msgs=part?[...base,{role:'assistant',content:a.t.trimEnd()},{role:'user',content:'Continue exactly where you stopped. Do not repeat anything.'}]:base;
-   cut=await stream(msgs,d=>{a.t+=d;render()});part++}
-  while(cut&&S.inf&&part<10)}
- catch(e){a.t+=(a.t?'\n\n':'')+'**Error:** '+e.message+(/Failed to fetch/.test(e.message)?' (check your API key, model name and provider in Settings)':'')}
- busy=false;save();render()}
-$('send').onclick=()=>ask($('inp').value);
-$('inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask($('inp').value)}});
-$('inp').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'});
-$('newBtn').onclick=()=>{cur=null;render()};
-$('inf').onclick=()=>{S.inf=!S.inf;save();render()};
-$('setBtn').onclick=()=>$('modal').classList.add('on');
-$('close').onclick=()=>{S.focus=$('focus').value;save();$('modal').classList.remove('on')};
-$('focus').value=S.focus;render();
+const $=id=>document.getElementById(id),E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let db,uid,me=null,servers={},mine={},chans={},profs={},unread={},cwatch={},swatch={},cur={v:'discover'},unsubM=null,msgs=[],q='',LR={},REQ=[];
+try{LR=JSON.parse(localStorage.getItem('dv_lr')||'{}');me=JSON.parse(localStorage.getItem('dv_me')||'null');REQ=JSON.parse(localStorage.getItem('dv_req')||'[]')}catch(e){}
+const sv=()=>{try{localStorage.setItem('dv_lr',JSON.stringify(LR));localStorage.setItem('dv_req',JSON.stringify(REQ))}catch(e){}};
+const col=p=>db.collection(p),dc=p=>db.doc(p),slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20)||'x';
+const av=(u,t,s)=>`<div class="av" style="--s:${s||36}px">${u?`<img src="${E(u)}">`:E(t)}</div>`;
+function pick(cb){const f=document.createElement('input');f.type='file';f.accept='image/*';f.onchange=()=>{if(!f.files[0])return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=c.height=96;const m=Math.min(i.width,i.height);c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,96,96);cb(c.toDataURL('image/jpeg',.75))};i.src=r.result};r.readAsDataURL(f.files[0])};f.click()}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=760;g.gain.value=.05;o.start();o.stop(a.currentTime+.12)}catch(e){}}
+function toast(h,sub,fn){const t=document.createElement('div');t.className='t';t.innerHTML=`<b>${E(h)}</b><small>${E(sub)}</small>`;t.onclick=()=>{fn&&fn();t.remove()};$('toasts').append(t);setTimeout(()=>t.remove(),5000);beep();
+ try{if(document.hidden&&Notification.permission==='granted')new Notification(h,{body:sub})}catch(e){}}
+function prof(u){if(u===uid)return me;if(profs[u])return profs[u];profs[u]={name:'…'};db.doc('profiles/'+u).get().then(s=>{if(s.exists){profs[u]=s.data();draw()}}).catch(()=>{});return profs[u]}
+const L=()=>Object.values(mine).map(m=>servers[m.sid]&&Object.assign({id:m.sid,role:m.role},servers[m.sid])).filter(Boolean);
+const role=sid=>mine[sid]&&mine[sid].role,canM=sid=>['owner','manager'].includes(role(sid));
+const sIcon=s=>s.icon?`<img src="${E(s.icon)}">`:`<span>${E(s.name.slice(0,2))}</span>`;
+function render(){rail();top();draw()}
+function rail(){const l=L();$('rail').innerHTML=`<div class="si ${cur.v==='discover'?'on':''}" data-d title="Discover">🧭</div><div class="sep"></div>`+l.map(s=>`<div class="si ${cur.sid===s.id&&cur.v==='server'?'on':''}" data-s="${s.id}" title="${E(s.name)}">${sIcon(s)}${(chans[s.id]||[]).some(c=>unread[c.id])?'<i class="dot"></i>':''}</div>`).join('')+`<div class="si add" data-a title="Create a server">+</div>`}
+function top(){const h=`<div class="logo"><div class="mark">Dv</div><b>Devo</b></div>`;
+ if(cur.v==='discover'){$('top').innerHTML=h+`<span class="sname">Discover</span><div id="tabs"></div><button class="gear" data-g>⚙ Settings</button>`;return}
+ const s=servers[cur.sid];if(!s)return;
+ $('top').innerHTML=h+`<span class="sname">${E(s.name)}</span><div id="tabs">${(chans[cur.sid]||[]).map(c=>`<div class="tab ${c.id===cur.cid?'on':''}" data-c="${c.id}">$${E(c.name)}${unread[c.id]?'<i class="dot"></i>':''}</div>`).join('')}${canM(cur.sid)?'<div class="plus" data-p title="New channel">+</div>':''}</div><button class="gear" data-g>⚙ Settings</button>`}
+function draw(){const b=$('body'),f=$('foot');
+ if(cur.v==='discover'){f.style.display='none';const l=Object.entries(servers).map(([id,s])=>({id,...s})).filter(s=>s.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>(b.count||0)-(a.count||0));
+  if(!document.getElementById('sq')){b.innerHTML=`<div class="row"><input type="text" id="sq" placeholder="Search servers…" value="${E(q)}"><input type="text" id="code" placeholder="Invite code" style="max-width:160px"><button class="b" id="jc">Join</button></div><div class="grid" id="grid"></div>`;
+   $('sq').oninput=e=>{q=e.target.value;draw()};$('jc').onclick=()=>join($('code').value.trim())}
+  $('grid').innerHTML=l.length?l.map((s,i)=>{const j=!!mine[s.id],r=REQ.includes(s.id);return `<div class="card"><div class="si" style="cursor:default">${sIcon(s)}</div><b>${E(s.name)}</b><small>${i===0&&!q?'🔥 ':''}${s.count||0} members</small><button class="b ${j?'g':''}" data-j="${s.id}" ${r&&!j?'disabled':''}>${j?'Open':r?'Requested':'Request to join'}</button></div>`}).join(''):'<div class="empty">No servers found.</div>';return}
+ f.style.display='block';const near=b.scrollHeight-b.scrollTop-b.clientHeight<140;
+ b.innerHTML=msgs.length?msgs.map(m=>{const p=prof(m.uid);return `<div class="m">${av(p.av,(p.name||'?')[0].toUpperCase())}<div><div class="who">${E(p.name)}<small>${new Date(m.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</small>${m.uid===uid||canM(cur.sid)?`<button class="x" data-x="${m.id}">✕</button>`:''}</div><div class="txt">${E(m.text)}</div></div></div>`}).join(''):'<div class="empty">Nothing here yet. Say hi 👋</div>';
+ if(near||draw.f){b.scrollTop=b.scrollHeight;draw.f=0}}
+function openCh(sid,cid){cur={v:'server',sid,cid};LR[cid]=Date.now();sv();delete unread[cid];msgs=[];draw.f=1;if(unsubM)unsubM();
+ unsubM=col(`servers/${sid}/channels/${cid}/messages`).orderBy('ts','asc').limit(200).onSnapshot(s=>{msgs=s.docs.map(d=>({id:d.id,...d.data()}));LR[cid]=Date.now();draw()});render()}
+function openS(sid){const c=chans[sid]||[];if(c[0])openCh(sid,c[0].id);else{cur={v:'server',sid,cid:null};render()}}
+function watchS(sid){if(swatch[sid])return;swatch[sid]=1;col(`servers/${sid}/channels`).onSnapshot(s=>{chans[sid]=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.ts-b.ts);chans[sid].forEach(c=>watchC(sid,c));if(cur.v==='server'&&cur.sid===sid&&!cur.cid&&chans[sid][0])openCh(sid,chans[sid][0].id);else render()})}
+function watchC(sid,c){if(cwatch[c.id])return;cwatch[c.id]=1;if(LR[c.id]==null){LR[c.id]=Date.now();sv()}let init=true;
+ col(`servers/${sid}/channels/${c.id}/messages`).orderBy('ts','desc').limit(1).onSnapshot(s=>{const d=s.docs[0];if(d){const m=d.data(),view=cur.v==='server'&&cur.cid===c.id&&!document.hidden;
+  if(m.uid!==uid&&m.ts>LR[c.id]&&!view){unread[c.id]=true;if(!init)toast((servers[sid]||{}).name+' · $'+c.name,prof(m.uid).name+': '+m.text.slice(0,60),()=>openCh(sid,c.id));render()}}init=false})}
+async function cnt(sid){const s=await col('memberships').where('sid','==',sid).get();await dc('servers/'+sid).update({count:s.size})}
+async function join(code){if(!code||!servers[code])return alert('Invalid invite code');if(mine[code])return openS(code);
+ await dc(`memberships/${uid}_${code}`).set({uid,sid:code,role:'member'});cnt(code);openS(code)}
+async function reqJoin(sid){await dc(`servers/${sid}/requests/${uid}`).set({uid,ts:Date.now()});REQ.push(sid);sv();draw()}
+function modal(h){$('mod').innerHTML=h;$('ov').classList.add('on')}const close=()=>$('ov').classList.remove('on');
+$('ov').onclick=e=>{if(e.target.id==='ov')close()};
+function newServer(){let ic=null;modal(`<h3>Create a server</h3><div class="row"><div id="pv">${av(null,'??',56)}</div><button class="b g" id="pp">Choose picture</button></div><input type="text" id="nn" maxlength="24" placeholder="Server name"><button class="b" id="go">Create</button>`);
+ const pv=()=>$('pv').innerHTML=av(ic,($('nn').value||'??').slice(0,2),56);$('nn').oninput=pv;$('pp').onclick=()=>pick(d=>{ic=d;pv()});
+ $('go').onclick=async()=>{const n=$('nn').value.trim();if(n.length<2)return;const sid=slug(n)+Date.now().toString(36);
+  await dc('servers/'+sid).set({name:n,icon:ic,owner:uid,count:1,ts:Date.now()});await dc(`servers/${sid}/channels/general`).set({name:'general',ts:Date.now()});await dc(`memberships/${uid}_${sid}`).set({uid,sid,role:'owner'});close();setTimeout(()=>openS(sid),400)}}
+function newChan(){modal(`<h3>New channel</h3><input type="text" id="cn" maxlength="20" placeholder="channel-name"><button class="b" id="go">Create</button>`);
+ $('go').onclick=async()=>{const n=slug($('cn').value);if(!n)return;const id=n+Date.now().toString(36).slice(-3);await dc(`servers/${cur.sid}/channels/${id}`).set({name:n,ts:Date.now()});close()}}
+async function settings(){const sid=cur.v==='server'?cur.sid:null,s=sid&&servers[sid];
+ let h=`<h3>Settings</h3><div class="lbl">Your profile</div><div class="row"><div id="mp">${av(me.av,me.name[0].toUpperCase(),48)}</div><span>${E(me.name)}</span><button class="b g" id="cp">Change picture</button></div>`;
+ if(s){h+=`<div class="lbl">${E(s.name)}</div><div class="row"><span>Invite code: <b>${sid}</b></span><button class="b g" id="cc">Copy</button></div>`;
+  if(canM(sid)){const rq=await col(`servers/${sid}/requests`).get(),mb=await col('memberships').where('sid','==',sid).get();
+   h+=`<div class="lbl">Join requests</div>`+(rq.docs.length?rq.docs.map(d=>`<div class="row"><span data-n="${d.id}">…</span><button class="b" data-ac="${d.id}">Accept</button><button class="b g" data-dc="${d.id}">Decline</button></div>`).join(''):'<small style="color:var(--mute)">No pending requests</small>')
+   +`<div class="lbl">Members</div>`+mb.docs.map(d=>{const m=d.data();return `<div class="row"><span data-n="${m.uid}">…</span><small>${m.role}</small>${role(sid)==='owner'&&m.role!=='owner'?`<button class="b g" data-r="${d.id}|${m.role==='manager'?'member':'manager'}">${m.role==='manager'?'Demote':'Make manager'}</button>`:''}</div>`}).join('')}
+  if(role(sid)==='member')h+=`<button class="b g" id="lv">Leave server</button>`}
+ h+=`<button class="b" id="dn">Done</button>`;modal(h);
+ $('mod').querySelectorAll('[data-n]').forEach(async el=>{const x=await db.doc('profiles/'+el.dataset.n).get();el.textContent=x.exists?x.data().name:'Someone'});
+ $('cp').onclick=()=>pick(d=>{me.av=d;saveMe();$('mp').innerHTML=av(d,'',48)});$('dn').onclick=close;
+ if($('cc'))$('cc').onclick=()=>{try{navigator.clipboard.writeText(sid)}catch(e){}$('cc').textContent='Copied'};
+ if($('lv'))$('lv').onclick=async()=>{await dc(`memberships/${uid}_${sid}`).delete();cnt(sid);close();cur={v:'discover'};render()};
+ $('mod').onclick=async e=>{const d=e.target.dataset;if(d.ac){await dc(`memberships/${d.ac}_${sid}`).set({uid:d.ac,sid,role:'member'});await dc(`servers/${sid}/requests/${d.ac}`).delete();cnt(sid);settings()}
+  if(d.dc){await dc(`servers/${sid}/requests/${d.dc}`).delete();settings()}
+  if(d.r){const[id,r]=d.r.split('|');await dc('memberships/'+id).update({role:r});settings()}}}
+async function saveMe(){try{localStorage.setItem('dv_me',JSON.stringify(me))}catch(e){}await dc('profiles/'+uid).set({name:me.name,av:me.av||null});render()}
+$('rail').onclick=e=>{const t=e.target.closest('.si');if(!t)return;if('d' in t.dataset){cur={v:'discover'};if(unsubM)unsubM();render()}else if('a' in t.dataset)newServer();else if(t.dataset.s)openS(t.dataset.s)};
+$('top').onclick=e=>{const t=e.target.closest('[data-c],[data-p],[data-g]');if(!t)return;if(t.dataset.c)openCh(cur.sid,t.dataset.c);else if('p' in t.dataset)newChan();else settings()};
+$('body').onclick=e=>{const t=e.target.closest('[data-j],[data-x]');if(!t)return;if(t.dataset.j){const id=t.dataset.j;mine[id]?openS(id):reqJoin(id)}else dc(`servers/${cur.sid}/channels/${cur.cid}/messages/${t.dataset.x}`).delete()};
+async function send(){const t=$('inp').value.trim();if(!t||!cur.cid)return;$('inp').value='';$('inp').style.height='auto';draw.f=1;
+ try{await dc(`servers/${cur.sid}/channels/${cur.cid}/messages/m${Date.now()}${Math.random().toString(36).slice(2,5)}`).set({uid,text:t.slice(0,2000),ts:Date.now()})}catch(e){$('inp').value=t}}
+$('send').onclick=send;$('inp').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}};$('inp').oninput=e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'};
+function onboard(){return new Promise(res=>{let a=null;$('ov').onclick=null;modal(`<h3>Create your profile</h3><div class="lbl">Saved on this device only</div><div class="row"><div id="pv">${av(null,'?',64)}</div><button class="b g" id="pp">Choose picture (optional)</button></div><input type="text" id="un" maxlength="20" placeholder="Username"><button class="b" id="go">Create profile</button>`);
+ const pv=()=>$('pv').innerHTML=av(a,($('un').value[0]||'?').toUpperCase(),64);$('un').oninput=pv;$('pp').onclick=()=>pick(d=>{a=d;pv()});
+ $('go').onclick=()=>{const n=$('un').value.trim();if(n.length<2)return;me={name:n,av:a};try{Notification.requestPermission()}catch(e){}close();res()}})}
+(async()=>{db=await claude.use('db');const u=await claude.use('user');
+ if(!db||!u){$('body').innerHTML='<div class="empty">Open this page signed in to claude.ai to chat.</div>';return}
+ uid=await u.id();if(!me)await onboard();await saveMe();$('ov').onclick=e=>{if(e.target.id==='ov')close()};
+ const g=await dc('servers/global').get();if(!g.exists){await dc('servers/global').set({name:'Global',icon:null,owner:'system',count:0,ts:Date.now()});await dc('servers/global/channels/general').set({name:'general',ts:Date.now()})}
+ const gm=await dc(`memberships/${uid}_global`).get();if(!gm.exists){await dc(`memberships/${uid}_global`).set({uid,sid:'global',role:'member'});cnt('global')}
+ col('servers').onSnapshot(s=>{servers={};s.docs.forEach(d=>servers[d.id]=d.data());render()});
+ col('memberships').where('uid','==',uid).onSnapshot(s=>{mine={};s.docs.forEach(d=>mine[d.data().sid]=d.data());Object.keys(mine).forEach(watchS);
+  if(cur.v==='discover'&&!draw.once&&mine.global){draw.once=1;openS('global')}else render()});
+})();
 </script></body></html>
