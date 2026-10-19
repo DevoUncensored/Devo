@@ -2,9 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><title>Devo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-:root{--bg:#fff;--panel:#f6f6f9;--line:#e3e3ea;--text:#16161d;--mute:#6b6b7b;--acc:#6d5efc;--acc2:#2bb5ff;--code:#14141c;--codet:#e8e8f2;--user:#eeeafe}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e0e14;--panel:#15151e;--line:#26263a;--text:#ececf5;--mute:#8d8da3;--code:#07070b;--user:#221f3f;color-scheme:dark}}
-:root[data-theme=dark]{--bg:#0e0e14;--panel:#15151e;--line:#26263a;--text:#ececf5;--mute:#8d8da3;--code:#07070b;--user:#221f3f;color-scheme:dark}
+:root{--bg:#0e0e14;--panel:#15151e;--line:#26263a;--text:#ececf5;--mute:#8d8da3;--acc:#7c6dff;--acc2:#2bb5ff;--code:#07070b;--codet:#e8e8f2;--user:#221f3f;color-scheme:dark}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column}
 header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
@@ -55,8 +53,7 @@ select,input,.card textarea{width:100%;background:var(--panel);color:var(--text)
  <div class="right"><button class="icon" id="inf" title="Keep generating automatically when a reply is cut off">∞ Infinite</button><button class="icon" id="setBtn">⚙ Settings</button></div>
 </header>
 <div class="main">
- <aside><button class="new" id="newBtn">+ New chat</button><div class="lbl">Chats</div><div id="list"></div>
-  <div class="lbl">Project folder</div><div class="chat" id="pfile"><span>📁 devo / 📄 prompt.txt</span></div></aside>
+ <aside><button class="new" id="newBtn">+ New chat</button><div class="lbl">Chats</div><div id="list"></div></aside>
  <section>
   <div id="msgs"><div class="wrap" id="wrap"></div></div>
   <footer>
@@ -67,21 +64,13 @@ select,input,.card textarea{width:100%;background:var(--panel);color:var(--text)
   </footer>
  </section>
 </div>
-<div class="modal" id="pmodal"><div class="card"><h3>📄 prompt.txt</h3>
- <div class="row"><label>Devo follows this file in every chat. To change it, edit prompt.txt in your GitHub repo.</label><textarea id="pText" rows="8" readonly style="font-family:ui-monospace,monospace"></textarea></div>
- <button class="new" id="pClose" style="width:100%">Close</button></div></div>
 <div class="modal" id="modal"><div class="card"><h3>Settings</h3>
- <div class="row"><label>Provider</label><select id="prov"><option value="anthropic">Anthropic (Claude)</option><option value="openai">OpenAI-compatible (OpenAI, Groq, OpenRouter…)</option></select></div>
- <div class="row"><label>API key</label><input id="key" type="password" placeholder="Paste your key" autocomplete="off"><div class="note">Stored only in this browser. Sent only to the provider you choose.</div></div>
- <div class="row"><label>Model</label><input id="model"></div>
- <div class="row" id="baseRow"><label>Base URL</label><input id="base"></div>
  <div class="row"><label>Focus</label><select id="focus"><option value="code">Writing & debugging code</option><option value="design">Architecture & design</option><option value="review">Code review & refactor</option></select></div>
- <div class="row"><label>Theme</label><select id="theme"><option value="auto">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
  <button class="new" id="close" style="width:100%">Done</button></div></div>
 <script>
 const $=id=>document.getElementById(id);
 let chats=[],cur=null,busy=false,stop=false,PROMPT='';
-let S={prov:'anthropic',key:'',model:'claude-sonnet-5-5',base:'https://api.openai.com/v1',focus:'code',theme:'auto',inf:false};
+let S={focus:'code',inf:false};
 try{chats=JSON.parse(localStorage.getItem('dv_chats')||'[]');S=Object.assign(S,JSON.parse(localStorage.getItem('dv_set')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('dv_chats',JSON.stringify(chats.slice(0,40)));localStorage.setItem('dv_set',JSON.stringify(S))}catch(e){}};
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -104,39 +93,26 @@ function render(){
  $('list').innerHTML=chats.map(x=>`<div class="chat ${x.id===cur?'on':''}" onclick="cur='${x.id}';render()"><span>${esc(x.title)}</span><b onclick="event.stopPropagation();del('${x.id}')">✕</b></div>`).join('');
  $('inf').classList.toggle('on',S.inf);$('msgs').scrollTop=$('msgs').scrollHeight}
 function del(id){chats=chats.filter(x=>x.id!==id);if(cur===id)cur=null;save();render()}
-const SYS={code:'You are Devo, an expert software engineer fluent in every language and framework. Write idiomatic, production-quality code, handle edge cases, and debug methodically.',design:'You are Devo, a senior software and UI/UX architect. Focus on system design, patterns, trade-offs and clean interfaces, with concrete code sketches.',review:'You are Devo, a meticulous code reviewer. Find bugs, security, performance and design problems, then give refactored code.'};
-async function loadPrompt(){try{const r=await fetch('prompt.txt?'+Date.now(),{cache:'no-store'});PROMPT=r.ok?(await r.text()).trim():''}catch(e){}}
-function sysPrompt(){let s=SYS[S.focus]+' Be concise but thorough. Put code in fenced blocks with a language tag.';
- if(PROMPT&&PROMPT!=='put anything you want the ai to follow here')s+='\n\nProject instructions from prompt.txt (follow strictly):\n'+PROMPT;return s}
-// One streamed request. Returns true if the reply was cut off by the length limit.
+const WORKER_URL='/api/chat'; // served by netlify/edge-functions/chat.js
 async function stream(msgs,onText){
- let url,headers={'Content-Type':'application/json'},body;
- if(S.prov==='anthropic'){url='https://api.anthropic.com/v1/messages';Object.assign(headers,{'x-api-key':S.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});
-  body={model:S.model,max_tokens:4096,system:sysPrompt(),messages:msgs,stream:true}}
- else{url=S.base.replace(/\/$/,'')+'/chat/completions';headers.Authorization='Bearer '+S.key;
-  body={model:S.model,messages:[{role:'system',content:sysPrompt()},...msgs],stream:true}}
- const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
- if(!r.ok){let t=await r.text();try{t=JSON.parse(t).error.message||t}catch(e){}throw new Error(r.status+': '+t)}
+ const r=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:msgs,focus:S.focus})});
+ if(!r.ok){let t=await r.text();try{const j=JSON.parse(t);t=(j.error&&j.error.message)||j.error||t}catch(e){}throw new Error(r.status+': '+t)}
  const rd=r.body.getReader(),dec=new TextDecoder();let buf='',cut=false;
  while(true){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
   const lines=buf.split('\n');buf=lines.pop();
-  for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d||d==='[DONE]')continue;
-   try{const j=JSON.parse(d);
-    if(S.prov==='anthropic'){if(j.type==='content_block_delta'&&j.delta.text)onText(j.delta.text);if(j.type==='message_delta'&&j.delta.stop_reason==='max_tokens')cut=true}
-    else{const ch=j.choices&&j.choices[0];if(ch){if(ch.delta&&ch.delta.content)onText(ch.delta.content);if(ch.finish_reason==='length')cut=true}}}catch(e){}}}
+  for(const l of lines){if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(!d)continue;
+   try{const j=JSON.parse(d);if(j.type==='content_block_delta'&&j.delta.text)onText(j.delta.text);if(j.type==='message_delta'&&j.delta.stop_reason==='max_tokens')cut=true}catch(e){}}}
  return cut}
 async function ask(text){
  text=(text||'').trim();if(!text||busy)return;
- if(!S.key){$('modal').classList.add('on');return}
  let c=chats.find(x=>x.id===cur);
  if(!c){c={id:'c'+Date.now(),title:text.slice(0,32),m:[]};chats.unshift(c);cur=c.id}
  c.m.push({r:'user',t:text});const a={r:'assistant',t:''};c.m.push(a);$('inp').value='';$('inp').style.height='auto';busy=true;render();
- await loadPrompt();
  const base=c.m.slice(0,-1).map(m=>({role:m.r,content:m.t}));
  try{let part=0,cut;
   do{const msgs=part?[...base,{role:'assistant',content:a.t.trimEnd()},{role:'user',content:'Continue exactly where you stopped. Do not repeat anything.'}]:base;
    cut=await stream(msgs,d=>{a.t+=d;render()});part++}
-  while(cut&&S.inf&&part<40)}
+  while(cut&&S.inf&&part<10)}
  catch(e){a.t+=(a.t?'\n\n':'')+'**Error:** '+e.message+(/Failed to fetch/.test(e.message)?' (check your API key, model name and provider in Settings)':'')}
  busy=false;save();render()}
 $('send').onclick=()=>ask($('inp').value);
@@ -144,12 +120,7 @@ $('inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preve
 $('inp').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'});
 $('newBtn').onclick=()=>{cur=null;render()};
 $('inf').onclick=()=>{S.inf=!S.inf;save();render()};
-$('pfile').onclick=async()=>{await loadPrompt();$('pText').value=PROMPT||'(prompt.txt not found next to index.html)';$('pmodal').classList.add('on')};
-$('pClose').onclick=()=>$('pmodal').classList.remove('on');
 $('setBtn').onclick=()=>$('modal').classList.add('on');
-function theme(){S.theme==='auto'?document.documentElement.removeAttribute('data-theme'):document.documentElement.setAttribute('data-theme',S.theme)}
-function baseRow(){$('baseRow').style.display=$('prov').value==='openai'?'block':'none'}
-$('prov').onchange=()=>{const o=$('prov').value==='openai';$('model').value=o?'gpt-4o':'claude-sonnet-5-5';baseRow()};
-$('close').onclick=()=>{Object.assign(S,{prov:$('prov').value,key:$('key').value.trim(),model:$('model').value.trim(),base:$('base').value.trim(),focus:$('focus').value,theme:$('theme').value});theme();save();$('modal').classList.remove('on')};
-['prov','key','model','base','focus','theme'].forEach(k=>$(k).value=S[k]);baseRow();theme();loadPrompt();render();
+$('close').onclick=()=>{S.focus=$('focus').value;save();$('modal').classList.remove('on')};
+$('focus').value=S.focus;render();
 </script></body></html>
